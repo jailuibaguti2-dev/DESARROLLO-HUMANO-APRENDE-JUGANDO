@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprender Jugando</title>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff; /* Azul claro */
+            color: #333;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+        header {
+            background-color: #4a90e2; /* Azul */
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        h2 {
+            color: #4a90e2;
+        }
+        button {
+            background-color: #7ed321; /* Verde */
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            margin: 10px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        button:hover {
+            background-color: #5cb85c;
+            transform: scale(1.05);
+        }
+        .tarjeta {
+            background-color: white;
+            border: 2px solid #4a90e2;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .tarjeta:hover {
+            background-color: #e8f4fd;
+        }
+        .tarjeta.correcta {
+            border-color: #7ed321;
+            background-color: #d4edda;
+        }
+        .tarjeta.incorrecta {
+            border-color: #f5a623;
+            background-color: #f8d7da;
+        }
+        .oculto {
+            display: none;
+        }
+        .desplegado {
+            max-height: 500px;
+            opacity: 1;
+            transition: max-height 0.5s ease, opacity 0.5s ease;
+        }
+        .opciones {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .opcion {
+            background-color: #f5a623; /* Amarillo */
+            color: #333;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+        .opcion:hover {
+            background-color: #e0a800;
+        }
+        .opcion.seleccionada {
+            background-color: #4a90e2;
+            color: white;
+        }
+        #resumen {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #puntaje {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        /* Responsive */
+        @media (max-width: 600px) {
+            .opciones {
+                flex-direction: column;
+                align-items: center;
+            }
+            .tarjeta {
+                margin: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Estudiantes en clase aprendiendo" style="width: 100%; max-width: 400px; margin-bottom: 20px;">
+        <h1>Aprender Jugando</h1>
+        <h2>Relación entre emociones y aprendizaje</h2>
+        <p>Desarrollo humano basado en las teorías de Lev Vygotsky y John Bowlby. Autores: Jaime Ibarra, Javier Ferreira, Julian Valderrama.</p>
+        <button id="iniciarJuego">Iniciar Juego</button>
+    </header>
+
+    <div id="pantallaPrincipal" class="oculto">
+        <h2>Selecciona una situación para comenzar:</h2>
+        <div id="situaciones" class="opciones">
+            <!-- Tarjetas de situaciones se generan aquí -->
+        </div>
+        <button id="guardarRespuestas">Guardar Respuestas</button>
+        <button id="reiniciarJuego" class="oculto">Volver a realizar</button>
+    </div>
+
+    <div id="resumen" class="oculto">
+        <!-- Resumen se muestra aquí -->
+    </div>
+
+    <script>
+        // Datos del juego
+        const situaciones = [
+            "Un estudiante no entiende un tema de matemáticas.",
+            "Un niño tiene miedo de participar en clase.",
+            "Un estudiante se frustra fácilmente cuando se equivoca.",
+            "Dos compañeros trabajan juntos, pero uno domina todo.",
+            "Un niño no recibe apoyo en casa para estudiar.",
+            "Un estudiante tiene buenas capacidades pero baja confianza."
+        ];
+
+        const emociones = [
+            "Seguridad",
+            "Miedo",
+            "Ansiedad",
+            "Confianza",
+            "Inseguridad",
+            "Motivación"
+        ];
+
+        const estrategias = [
+            "Explicación paso a paso",
+            "Trabajo en grupo",
+            "Tutoría entre pares",
+            "Uso de ejemplos prácticos",
+            "Retroalimentación positiva"
+        ];
+
+        // Respuestas correctas: objeto con situación index, emoción correcta, estrategia correcta
+        const correctas = {
+            0: { emociones: ["Inseguridad", "Ansiedad"], estrategias: ["Explicación paso a paso", "Tutoría entre pares"] },
+            1: { emociones: ["Miedo"], estrategias: ["Retroalimentación positiva", "Trabajo en grupo"] },
+            2: { emociones: ["Ansiedad", "Inseguridad"], estrategias: ["Retroalimentación positiva"] },
+            3: { emociones: ["Inseguridad"], estrategias: ["Tutoría entre pares", "Trabajo en grupo"] }, // Asumiendo Trabajo en grupo como colaborativo
+            4: { emociones: ["Inseguridad"], estrategias: ["Retroalimentación positiva"] }, // Sin Desmotivación, usando Inseguridad
+            5: { emociones: ["Inseguridad"], estrategias: ["Retroalimentación positiva"] }
+        };
+
+        let selecciones = {}; // {situacionIndex: {emocion: '', estrategia: ''}}
+        let situacionActual = null;
+
+        // Función para iniciar juego
+        document.getElementById('iniciarJuego').onclick = function() {
+            document.querySelector('header').classList.add('oculto');
+            document.getElementById('pantallaPrincipal').classList.remove('oculto');
+            crearTarjetasSituaciones();
+        };
+
+        // Crear tarjetas de situaciones
+        function crearTarjetasSituaciones() {
+            const container = document.getElementById('situaciones');
+            container.innerHTML = '';
+            situaciones.forEach((sit, index) => {
+                const tarjeta = document.createElement('div');
+                tarjeta.className = 'tarjeta';
+                tarjeta.textContent = `Situación ${index + 1}: ${sit}`;
+                tarjeta.onclick = () => seleccionarSituacion(index, tarjeta);
+                container.appendChild(tarjeta);
+            });
+        }
+
+        // Seleccionar situación
+        function seleccionarSituacion(index, tarjeta) {
+            situacionActual = index;
+            mostrarEmociones(tarjeta);
+        }
+
+        // Mostrar emociones
+        function mostrarEmociones(tarjeta) {
+            if (tarjeta.querySelector('.opciones')) return; // Ya tiene emociones
+            const p = document.createElement('p');
+            p.textContent = situaciones[situacionActual];
+            tarjeta.appendChild(p);
+            const h3 = document.createElement('h3');
+            h3.textContent = '¿Qué emoción crees que siente?';
+            tarjeta.appendChild(h3);
+            const emocionesDiv = document.createElement('div');
+            emocionesDiv.className = 'opciones desplegado';
+            emociones.forEach(emocion => {
+                const tarjetaE = document.createElement('div');
+                tarjetaE.className = 'tarjeta opcion';
+                tarjetaE.textContent = emocion;
+                tarjetaE.onclick = function() { seleccionarEmocion(emocion, tarjeta, this); };
+                emocionesDiv.appendChild(tarjetaE);
+            });
+            tarjeta.appendChild(emocionesDiv);
+        }
+
+        // Seleccionar emoción
+        function seleccionarEmocion(emocion, tarjeta, btn) {
+            if (!selecciones[situacionActual]) selecciones[situacionActual] = {};
+            selecciones[situacionActual].emocion = emocion;
+            // Marcar seleccionada
+            const opciones = tarjeta.querySelectorAll('.opcion');
+            opciones.forEach(op => op.classList.remove('seleccionada'));
+            btn.classList.add('seleccionada');
+            mostrarEstrategias(tarjeta);
+        }
+
+        // Mostrar estrategias
+        function mostrarEstrategias(tarjeta) {
+            if (tarjeta.querySelector('h3:last-of-type') && tarjeta.querySelector('h3:last-of-type').textContent === 'Tarjetas de ayuda') return; // Ya tiene
+            const titulo = document.createElement('h3');
+            titulo.textContent = 'Tarjetas de ayuda';
+            tarjeta.appendChild(titulo);
+            const estrategiasDiv = document.createElement('div');
+            estrategiasDiv.className = 'opciones desplegado';
+            estrategias.forEach((estrategia, index) => {
+                const letra = String.fromCharCode(97 + index);
+                const tarjetaE = document.createElement('div');
+                tarjetaE.className = 'tarjeta opcion';
+                tarjetaE.textContent = `${letra}) ${estrategia}`;
+                tarjetaE.onclick = function() { seleccionarEstrategia(estrategia, tarjeta, this); };
+                estrategiasDiv.appendChild(tarjetaE);
+            });
+            tarjeta.appendChild(estrategiasDiv);
+        }
+
+        // Seleccionar estrategia
+        function seleccionarEstrategia(estrategia, tarjeta, btn) {
+            if (!selecciones[situacionActual]) selecciones[situacionActual] = {};
+            selecciones[situacionActual].estrategia = estrategia;
+            // Marcar seleccionada
+            const opciones = tarjeta.querySelectorAll('.opcion');
+            opciones.forEach(op => op.classList.remove('seleccionada'));
+            btn.classList.add('seleccionada');
+            // Dejar visible, no ocultar
+        }
+
+        // Guardar respuestas
+        document.getElementById('guardarRespuestas').onclick = function() {
+            let correctasCount = 0;
+            const resumenDiv = document.getElementById('resumen');
+            resumenDiv.innerHTML = '<h2>Resumen de Respuestas</h2>';
+            situaciones.forEach((sit, index) => {
+                const sel = selecciones[index];
+                if (sel) {
+                    const isCorrectEmocion = correctas[index].emociones.includes(sel.emocion);
+                    const isCorrectEstrategia = correctas[index].estrategias.includes(sel.estrategia);
+                    const isCorrect = isCorrectEmocion && isCorrectEstrategia;
+                    if (isCorrect) correctasCount++;
+                    const clase = isCorrect ? 'correcta' : 'incorrecta';
+                    resumenDiv.innerHTML += `<div class="tarjeta ${clase}">Situación ${index + 1}: ${sit}<br>Tu respuesta: Emoción - ${sel.emocion}, Estrategia - ${sel.estrategia}<br>${isCorrect ? 'Correcto' : 'Incorrecto'}</div>`;
+                } else {
+                    resumenDiv.innerHTML += `<div class="tarjeta incorrecta">Situación ${index + 1}: ${sit}<br>No respondida</div>`;
+                }
+            });
+            const mensaje = correctasCount >= 4 ? '¡Buen trabajo!' : 'Puedes mejorar, intenta de nuevo';
+            resumenDiv.innerHTML += `<div id="puntaje">Puntaje: ${correctasCount}/6</div><p>${mensaje}</p><p>Recuerda: Las emociones (Bowlby) influyen en el aprendizaje cognitivo y social (Vygotsky). El apoyo adecuado combina ambos aspectos.</p><button onclick="reiniciar()">Volver a realizar</button>`;
+            document.getElementById('pantallaPrincipal').classList.add('oculto');
+            resumenDiv.classList.remove('oculto');
+            document.getElementById('reiniciarJuego').classList.remove('oculto');
+        };
+
+        // Reiniciar juego
+        document.getElementById('reiniciarJuego').onclick = function() {
+            selecciones = {};
+            situacionActual = null;
+            document.getElementById('resumen').classList.add('oculto');
+            document.getElementById('reiniciarJuego').classList.add('oculto');
+            document.querySelector('header').classList.remove('oculto');
+            document.getElementById('pantallaPrincipal').classList.add('oculto');
+        };
+
+        function reiniciar() {
+            selecciones = {};
+            situacionActual = null;
+            document.getElementById('resumen').classList.add('oculto');
+            document.querySelector('header').classList.remove('oculto');
+            document.getElementById('pantallaPrincipal').classList.add('oculto');
+        }
+    </script>
+</body>
+</html>
