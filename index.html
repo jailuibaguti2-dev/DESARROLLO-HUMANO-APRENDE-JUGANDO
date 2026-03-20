@@ -139,41 +139,42 @@
     </div>
 
     <script>
-        // Datos del juego
+        // Datos del juego (modificados según el apartado solicitado)
         const situaciones = [
-            "Un estudiante no entiende un tema de matemáticas.",
-            "Un niño tiene miedo de participar en clase.",
-            "Un estudiante se frustra fácilmente cuando se equivoca.",
-            "Dos compañeros trabajan juntos, pero uno domina todo.",
-            "Un niño no recibe apoyo en casa para estudiar.",
-            "Un estudiante tiene buenas capacidades pero baja confianza."
+            "No comprende el tema",
+            "Pánico a participar",
+            "Se rinde al fallar",
+            "Compañero dominante",
+            "Contexto familiar frágil",
+            "Capaz pero dudoso"
         ];
 
         const emociones = [
-            "Seguridad",
-            "Miedo",
-            "Ansiedad",
-            "Confianza",
-            "Inseguridad",
-            "Motivación"
+            "Frustración Cognitiva",
+            "Ansiedad Social",
+            "Baja tolerancia al error",
+            "Sentimiento de inferioridad",
+            "Vulnerabilidad Afectiva",
+            "Baja Autoeficacia"
         ];
 
         const estrategias = [
-            "Explicación paso a paso",
-            "Trabajo en grupo",
-            "Tutoría entre pares",
-            "Uso de ejemplos prácticos",
-            "Retroalimentación positiva"
+            "Andamiaje segmentado",
+            "Entorno de baja presión",
+            "Reencuadre del fallo",
+            "Aprendizaje Cooperativo",
+            "Soporte Institucional",
+            "Refuerzo de logros reales"
         ];
 
         // Respuestas correctas: objeto con situación index, emoción correcta, estrategia correcta
         const correctas = {
-            0: { emociones: ["Inseguridad", "Ansiedad"], estrategias: ["Explicación paso a paso", "Tutoría entre pares"] },
-            1: { emociones: ["Miedo"], estrategias: ["Retroalimentación positiva", "Trabajo en grupo"] },
-            2: { emociones: ["Ansiedad", "Inseguridad"], estrategias: ["Retroalimentación positiva"] },
-            3: { emociones: ["Inseguridad"], estrategias: ["Tutoría entre pares", "Trabajo en grupo"] }, // Asumiendo Trabajo en grupo como colaborativo
-            4: { emociones: ["Inseguridad"], estrategias: ["Retroalimentación positiva"] }, // Sin Desmotivación, usando Inseguridad
-            5: { emociones: ["Inseguridad"], estrategias: ["Retroalimentación positiva"] }
+            0: { emociones: ["Frustración Cognitiva"], estrategias: ["Andamiaje segmentado"] },
+            1: { emociones: ["Ansiedad Social"], estrategias: ["Entorno de baja presión"] },
+            2: { emociones: ["Baja tolerancia al error"], estrategias: ["Reencuadre del fallo"] },
+            3: { emociones: ["Sentimiento de inferioridad"], estrategias: ["Aprendizaje Cooperativo"] },
+            4: { emociones: ["Vulnerabilidad Afectiva"], estrategias: ["Soporte Institucional"] },
+            5: { emociones: ["Baja Autoeficacia"], estrategias: ["Refuerzo de logros reales"] }
         };
 
         let selecciones = {}; // {situacionIndex: {emocion: '', estrategia: ''}}
